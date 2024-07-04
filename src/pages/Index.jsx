@@ -1,21 +1,48 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "sonner";
+
+const mockPaymentAPI = async (paymentDetails) => {
+  // Simulate API call
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      if (Math.random() > 0.5) {
+        resolve({ status: "success" });
+      } else {
+        reject({ status: "failure" });
+      }
+    }, 1000);
+  });
+};
 
 const Index = () => {
   const [amount, setAmount] = useState("");
-  const [upiId, setUpiId] = useState("");
-  const [qrCode, setQrCode] = useState(null);
+  const [paymentMethod, setPaymentMethod] = useState("card");
+  const [payerDetails, setPayerDetails] = useState("");
+  const { mutate, isLoading } = useMutation({
+    mutationFn: mockPaymentAPI,
+    onSuccess: (data) => {
+      toast.success("Payment Successful!");
+    },
+    onError: (error) => {
+      toast.error("Payment Failed!");
+    },
+  });
 
-  const generateQrCode = () => {
-    // Placeholder logic for generating QR code
-    const qrCodeData = `upi://pay?pa=${upiId}&am=${amount}`;
-    setQrCode(qrCodeData);
+  const handlePayment = () => {
+    const paymentDetails = {
+      amount,
+      paymentMethod,
+      payerDetails,
+    };
+    mutate(paymentDetails);
   };
 
   return (
     <div className="text-center space-y-4">
-      <h1 className="text-3xl">Dynamic QR Code Payment</h1>
+      <h1 className="text-3xl">Razorpay Replica Payment Gateway</h1>
       <div className="space-y-2">
         <Input
           placeholder="Enter Amount"
@@ -23,22 +50,19 @@ const Index = () => {
           onChange={(e) => setAmount(e.target.value)}
         />
         <Input
-          placeholder="Enter UPI ID"
-          value={upiId}
-          onChange={(e) => setUpiId(e.target.value)}
+          placeholder="Enter Payment Method (e.g., card, UPI)"
+          value={paymentMethod}
+          onChange={(e) => setPaymentMethod(e.target.value)}
         />
-        <Button onClick={generateQrCode}>Generate QR Code</Button>
+        <Input
+          placeholder="Enter Payer Details"
+          value={payerDetails}
+          onChange={(e) => setPayerDetails(e.target.value)}
+        />
+        <Button onClick={handlePayment} disabled={isLoading}>
+          {isLoading ? "Processing..." : "Make Payment"}
+        </Button>
       </div>
-      {qrCode && (
-        <div className="mt-4">
-          <img
-            src="/placeholder.svg"
-            alt="QR Code"
-            className="mx-auto object-cover w-full h-[400px]"
-          />
-          <p>{qrCode}</p>
-        </div>
-      )}
     </div>
   );
 };
