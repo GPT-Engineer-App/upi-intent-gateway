@@ -20,7 +20,8 @@ const Index = () => {
   const [amount, setAmount] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("card");
   const [payerDetails, setPayerDetails] = useState("");
-  const mutation = useMutation(mockPaymentAPI, {
+  const mutation = useMutation({
+    mutationFn: mockPaymentAPI,
     onSuccess: (data) => {
       toast.success(data.message);
     },
