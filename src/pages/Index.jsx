@@ -1,22 +1,16 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 
 const Index = () => {
   const [amount, setAmount] = useState("");
   const [upiId, setUpiId] = useState("");
   const [qrCode, setQrCode] = useState(null);
-  const navigate = useNavigate();
 
   const generateQrCode = () => {
     // Placeholder logic for generating QR code
     const qrCodeData = `upi://pay?pa=${upiId}&am=${amount}`;
     setQrCode(qrCodeData);
-  };
-
-  const handleAdminAccess = () => {
-    navigate("/admin");
   };
 
   return (
@@ -45,9 +39,6 @@ const Index = () => {
           <p>{qrCode}</p>
         </div>
       )}
-      <div className="mt-4">
-        <Button onClick={handleAdminAccess}>Admin Access</Button>
-      </div>
     </div>
   );
 };
